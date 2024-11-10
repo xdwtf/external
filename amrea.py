@@ -9,7 +9,7 @@ new_tag = "isthisdeal-21"
 pattern = r"(tag=)[^&]*"
 
 # Target chat ID where the modified message will be sent
-TARGET_CHAT_ID = "-1001258664792"  # Replace with your target chat ID
+TARGET_CHAT_ID = "-1001267968308"  # Replace with your target chat ID
 THIS_DEAL_ID = "-1002108741045"
 
 @bot.on_message(filters.chat(TARGET_CHAT_ID)  & filters.chat(4))  # Listen to messages in group with ID 4
