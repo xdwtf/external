@@ -32,6 +32,14 @@ async def url_replacement_handler(bot: BOT, message: Message):
         # Replace the old username with the new username in the caption
         modified_caption = re.sub(pattern_username, new_username, modified_caption)
         
+        # Modify the URLs inside text link entities
+        if message.caption_entities:
+            for entity in message.caption_entities:
+                if entity.type == "text_link" and 'url' in entity:
+                    # Modify the URL inside the text link
+                    modified_url = re.sub(pattern_tag, f"tag={new_tag}", entity.url)
+                    modified_caption = modified_caption.replace(entity.url, modified_url)
+        
         # Modify the button URLs and text (if the message contains reply_markup)
         if message.reply_markup:
             for row in message.reply_markup.inline_keyboard:
