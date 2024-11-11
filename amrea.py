@@ -15,7 +15,7 @@ pattern_username = r"@SmartDealsOfindia"
 pattern_amazon_url = r"https://www\.amazon\.in/[^ ]+"  # This matches any amazon.in URL
 
 # Target chat IDs
-TARGET_CHAT_ID = [-1001267968308, -1001628270160]
+TARGET_CHAT_ID = [-1001267968308, -1001628270160, -1001678712638]
 THIS_DEAL_ID = -1002108741045
 
 @bot.on_message(filters.chat(TARGET_CHAT_ID), group=4)  # Listening to messages from the specified channels
