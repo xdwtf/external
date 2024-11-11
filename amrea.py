@@ -8,9 +8,9 @@ new_tag = "isthisdeal-21"
 # Regular expression to find the tag parameter in the URL
 pattern = r"(tag=)[^&]*"
 
-# Target chat ID where the modified message will be sent
-TARGET_CHAT_ID = "-1001267968308"  # Replace with your target chat ID
-THIS_DEAL_ID = "-1002108741045"
+# Target chat IDs as integers
+TARGET_CHAT_ID = int("-1001267968308")
+THIS_DEAL_ID = int("-1002108741045")
 
 @bot.on_message(filters.chat(TARGET_CHAT_ID)  & filters.chat(4))  # Listen to messages in group with ID 4
 async def url_replacement_handler(bot: BOT, message: Message):
