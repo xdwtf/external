@@ -11,6 +11,9 @@ new_username = "@ThisDeal"
 pattern_tag = r"(tag=)[^&]*"
 pattern_username = r"@SmartDealsOfindia"
 
+# Regular expression to match Amazon URLs (only amazon.in URLs)
+pattern_amazon_url = r"https://www\.amazon\.in/[^ ]+"  # This matches any amazon.in URL
+
 # Target chat IDs
 TARGET_CHAT_ID = [-1001267968308, -1001628270160]
 THIS_DEAL_ID = -1002108741045
@@ -26,27 +29,33 @@ async def url_replacement_handler(bot: BOT, message: Message):
     elif message.text:
         text_to_check = message.text
     
-    if text_to_check:
+    # Check if the message contains an Amazon URL
+    if text_to_check and re.search(pattern_amazon_url, text_to_check):
         # Replace the old tag with the new tag in the caption
         modified_caption = re.sub(pattern_tag, f"tag={new_tag}", text_to_check)
         # Replace the old username with the new username in the caption
         modified_caption = re.sub(pattern_username, new_username, modified_caption)
         
-        # Modify the URLs inside text link entities
+        # Modify the URLs inside text link entities, but only process amazon.in URLs
         if message.caption_entities:
             for entity in message.caption_entities:
                 if entity.type == "text_link" and 'url' in entity:
-                    # Modify the URL inside the text link
-                    modified_url = re.sub(pattern_tag, f"tag={new_tag}", entity.url)
-                    modified_caption = modified_caption.replace(entity.url, modified_url)
+                    original_url = entity.url
+                    # Check if it's an amazon.in URL
+                    if "amazon.in" in original_url:
+                        # Modify the URL to replace the old tag
+                        modified_url = re.sub(pattern_tag, f"tag={new_tag}", original_url)
+                        # Update the caption with the new URL
+                        modified_caption = modified_caption.replace(original_url, modified_url)
         
         # Modify the button URLs and text (if the message contains reply_markup)
         if message.reply_markup:
             for row in message.reply_markup.inline_keyboard:
                 for button in row:
                     if button.url:
-                        # Replace the old tag in the button URL
-                        button.url = re.sub(pattern_tag, f"tag={new_tag}", button.url)
+                        # Modify only amazon.in URLs
+                        if "amazon.in" in button.url:
+                            button.url = re.sub(pattern_tag, f"tag={new_tag}", button.url)
                     if button.text:
                         # Replace the old username with the new username in the button text
                         button.text = button.text.replace("@SmartDealsOfindia", "@thisdeal")
@@ -82,3 +91,6 @@ async def url_replacement_handler(bot: BOT, message: Message):
                     text=modified_caption,
                     disable_web_page_preview=True
                 )
+    else:
+        # If the message doesn't contain an amazon.in URL, simply do nothing (ignore)
+        pass
