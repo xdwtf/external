@@ -12,7 +12,7 @@ pattern = r"(tag=)[^&]*"
 TARGET_CHAT_ID = int("-1001267968308")
 THIS_DEAL_ID = int("-1002108741045")
 
-@bot.on_message(filters.chat(TARGET_CHAT_ID)  & filters.chat(4))  # Listen to messages in group with ID 4
+@bot.on_message(filters.chat(TARGET_CHAT_ID), group=4)  # Listen to messages in group with ID 4
 async def url_replacement_handler(bot: BOT, message: Message):
     if message.text:
         # Regular expression to match URLs in the message
