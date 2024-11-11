@@ -51,34 +51,36 @@ async def url_replacement_handler(bot: BOT, message: Message):
                         # Replace the old username with the new username in the button text
                         button.text = button.text.replace("@SmartDealsOfindia", "@thisdeal")
         
-        # Send the modified message to the target chat
-        if message.photo:
-            # Send photo with modified caption and reply markup if available
-            if message.reply_markup:
-                await bot.send_photo(
-                    chat_id=THIS_DEAL_ID,
-                    photo=message.photo.file_id,
-                    caption=modified_caption,  # Send modified caption
-                    reply_markup=message.reply_markup
-                )
+        # Check if the content has been modified
+        if modified_caption != text_to_check:
+            # Send the modified message to the target chat
+            if message.photo:
+                # Send photo with modified caption and reply markup if available
+                if message.reply_markup:
+                    await bot.send_photo(
+                        chat_id=THIS_DEAL_ID,
+                        photo=message.photo.file_id,
+                        caption=modified_caption,  # Send modified caption
+                        reply_markup=message.reply_markup
+                    )
+                else:
+                    await bot.send_photo(
+                        chat_id=THIS_DEAL_ID,
+                        photo=message.photo.file_id,
+                        caption=modified_caption
+                    )
             else:
-                await bot.send_photo(
-                    chat_id=THIS_DEAL_ID,
-                    photo=message.photo.file_id,
-                    caption=modified_caption
-                )
-        else:
-            # Send text message with modified caption and reply markup if available
-            if message.reply_markup:
-                await bot.send_message(
-                    chat_id=THIS_DEAL_ID,
-                    text=modified_caption,
-                    reply_markup=message.reply_markup,  # Send modified inline keyboard
-                    disable_web_page_preview=True
-                )
-            else:
-                await bot.send_message(
-                    chat_id=THIS_DEAL_ID,
-                    text=modified_caption,
-                    disable_web_page_preview=True
-            )
+                # Send text message with modified caption and reply markup if available
+                if message.reply_markup:
+                    await bot.send_message(
+                        chat_id=THIS_DEAL_ID,
+                        text=modified_caption,
+                        reply_markup=message.reply_markup,  # Send modified inline keyboard
+                        disable_web_page_preview=True
+                    )
+                else:
+                    await bot.send_message(
+                        chat_id=THIS_DEAL_ID,
+                        text=modified_caption,
+                        disable_web_page_preview=True
+                    )
