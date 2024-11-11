@@ -1,5 +1,5 @@
 import re
-from app import BOT, bot, Message
+from ub_core import BOT, bot, Message
 from pyrogram import filters
 
 # New tag to replace the old tag
