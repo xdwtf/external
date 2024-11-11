@@ -1,6 +1,6 @@
 import re
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, MessageEntity
 from ub_core import BOT, bot, Message
 
 # New tag and username to replace the old tag and username
@@ -25,10 +25,12 @@ async def url_replacement_handler(bot: BOT, message: Message):
     if message.photo and message.caption:
         text_to_check = message.caption
         modified_caption = message.caption
+        caption_entities = message.caption_entities  # Capture entities of the caption
     # If the message is a text message
     elif message.text:
         text_to_check = message.text
         modified_caption = message.text
+        caption_entities = message.entities  # Capture entities of the text message
 
     if text_to_check:
         # Replace the old tag with the new tag in the caption or text
@@ -43,13 +45,14 @@ async def url_replacement_handler(bot: BOT, message: Message):
             modified = True
             modified_caption = new_caption
 
-        # Modify the URLs inside text link entities in the caption
-        if message.caption_entities:
-            for entity in message.caption_entities:
-                if entity.type == "text_link" and 'url' in entity:
+        # Modify the URLs inside text link entities in the caption or text
+        if caption_entities:
+            for entity in caption_entities:
+                if isinstance(entity, MessageEntity.TextLink) and 'url' in entity:
                     modified_url = re.sub(pattern_tag, f"tag={new_tag}", entity.url)
                     if modified_url != entity.url:
                         modified = True
+                    # Replace the original URL with the modified one
                     modified_caption = modified_caption.replace(entity.url, modified_url)
 
         # Modify the button URLs and text (if the message contains reply_markup)
@@ -69,7 +72,7 @@ async def url_replacement_handler(bot: BOT, message: Message):
                             modified = True
                         button.text = new_text
 
-        # If nothing was modified, skip sending this message
+        # If no modifications have occurred, skip sending this message
         if not modified:
             return
 
@@ -81,13 +84,15 @@ async def url_replacement_handler(bot: BOT, message: Message):
                     chat_id=THIS_DEAL_ID,
                     photo=message.photo.file_id,
                     caption=modified_caption,  # Send modified caption
+                    caption_entities=caption_entities,  # Preserve caption entities
                     reply_markup=message.reply_markup
                 )
             else:
                 await bot.send_photo(
                     chat_id=THIS_DEAL_ID,
                     photo=message.photo.file_id,
-                    caption=modified_caption
+                    caption=modified_caption,
+                    caption_entities=caption_entities  # Preserve caption entities
                 )
         else:
             # Send text message with modified caption and reply markup if available
@@ -95,6 +100,7 @@ async def url_replacement_handler(bot: BOT, message: Message):
                 await bot.send_message(
                     chat_id=THIS_DEAL_ID,
                     text=modified_caption,
+                    entities=caption_entities,  # Preserve text entities
                     reply_markup=message.reply_markup,  # Send modified inline keyboard
                     disable_web_page_preview=True
                 )
@@ -102,5 +108,6 @@ async def url_replacement_handler(bot: BOT, message: Message):
                 await bot.send_message(
                     chat_id=THIS_DEAL_ID,
                     text=modified_caption,
+                    entities=caption_entities,  # Preserve text entities
                     disable_web_page_preview=True
                 )
