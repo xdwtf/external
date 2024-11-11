@@ -18,39 +18,61 @@ THIS_DEAL_ID = -1002108741045
 @bot.on_message(filters.chat(TARGET_CHAT_ID), group=4)  # Listening to messages from the specified channels
 async def url_replacement_handler(bot: BOT, message: Message):
     text_to_check = None
+    modified_caption = None
+    modified = False  # Flag to track if anything was modified
 
     # If the message has a photo and a caption, check the caption
     if message.photo and message.caption:
         text_to_check = message.caption
+        modified_caption = message.caption
     # If the message is a text message
     elif message.text:
         text_to_check = message.text
-    
+        modified_caption = message.text
+
     if text_to_check:
-        # Replace the old tag with the new tag in the caption
-        modified_caption = re.sub(pattern_tag, f"tag={new_tag}", text_to_check)
-        # Replace the old username with the new username in the caption
-        modified_caption = re.sub(pattern_username, new_username, modified_caption)
-        
-        # Modify the URLs inside text link entities
+        # Replace the old tag with the new tag in the caption or text
+        new_caption = re.sub(pattern_tag, f"tag={new_tag}", modified_caption)
+        if new_caption != modified_caption:
+            modified = True
+            modified_caption = new_caption
+
+        # Replace the old username with the new username in the caption or text
+        new_caption = re.sub(pattern_username, new_username, modified_caption)
+        if new_caption != modified_caption:
+            modified = True
+            modified_caption = new_caption
+
+        # Modify the URLs inside text link entities in the caption
         if message.caption_entities:
             for entity in message.caption_entities:
                 if entity.type == "text_link" and 'url' in entity:
-                    # Modify the URL inside the text link
                     modified_url = re.sub(pattern_tag, f"tag={new_tag}", entity.url)
+                    if modified_url != entity.url:
+                        modified = True
                     modified_caption = modified_caption.replace(entity.url, modified_url)
-        
+
         # Modify the button URLs and text (if the message contains reply_markup)
         if message.reply_markup:
             for row in message.reply_markup.inline_keyboard:
                 for button in row:
                     if button.url:
                         # Replace the old tag in the button URL
-                        button.url = re.sub(pattern_tag, f"tag={new_tag}", button.url)
+                        modified_url = re.sub(pattern_tag, f"tag={new_tag}", button.url)
+                        if modified_url != button.url:
+                            modified = True
+                        button.url = modified_url
                     if button.text:
                         # Replace the old username with the new username in the button text
-                        button.text = button.text.replace("@SmartDealsOfindia", "@thisdeal")
-        
+                        new_text = button.text.replace("@SmartDealsOfindia", "@thisdeal")
+                        if new_text != button.text:
+                            modified = True
+                        button.text = new_text
+
+        # If nothing was modified, skip sending this message
+        if not modified:
+            return
+
         # Send the modified message to the target chat
         if message.photo:
             # Send photo with modified caption and reply markup if available
