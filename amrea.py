@@ -126,15 +126,16 @@ async def send_product_details(asin, chat_id):
     savings_percentage = product_details.get('savings_percentage', 'N/A')
 
     message_text = f"""
-**{title}**
+{title}
 
-😍 **Current Price: ₹{current_price}**
-🛒 **Original Price: ~~₹{original_price}~~**
-🪙 **You Save: {savings_percentage}%**
+😍 Current Price: ₹{current_price}
+🛒 Original Price: ₹{original_price}
+🪙 You Save: {savings_percentage}%
 
-🛍 **Link: {product_details.get('product_url', 'N/A')}**
+🛍 Link: {product_details.get('product_url', 'N/A')}
 """
 
+    # Calculate initial offsets for emojis
     offsets = {
         "😍": message_text.index("😍"),
         "🛒": message_text.index("🛒"),
@@ -142,17 +143,33 @@ async def send_product_details(asin, chat_id):
         "🛍": message_text.index("🛍")
     }
 
+    # Define initial caption entities
     caption_entities = [
+        M(type=MT.BOLD, offset=message_text.index(f"{title}"), length=len(title)),
+        M(type=MT.BOLD, offset=message_text.index(f"Current Price: ₹{current_price}"), length=len(f"Current Price: ₹{current_price}")),
+        M(type=MT.BOLD, offset=message_text.index(f"Original Price: ₹{original_price}"), length=len(f"Original Price: ₹{original_price}")),
+        M(type=MT.BOLD, offset=message_text.index(f"You Save: {savings_percentage}%"), length=len(f"You Save: {savings_percentage}%")),
+        M(type=MT.BOLD, offset=message_text.index(f"Link: {product_details.get('product_url', 'N/A')}"), length=len(f"Link: {product_details.get('product_url', 'N/A')}")),
+    ]
+
+    # Adjust offsets for bold formatting
+    bold_adjustment = 4  # Assuming 4 extra characters for **bold** formatting
+    for entity in caption_entities:
+        if entity.type == MT.BOLD:
+            start = entity.offset
+            length = entity.length
+            # Adjust emoji offsets after each bold section
+            for emoji, offset in offsets.items():
+                if offset > start:
+                    offsets[emoji] += bold_adjustment
+
+    # Add custom emoji entities with adjusted offsets
+    caption_entities.extend([
         M(type=MT.CUSTOM_EMOJI, offset=offsets["😍"], length=2, custom_emoji_id=emoji_ids["😍"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🛒"], length=2, custom_emoji_id=emoji_ids["🛒"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🪙"], length=2, custom_emoji_id=emoji_ids["🪙"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🛍"], length=2, custom_emoji_id=emoji_ids["🛍"]),
-        M(type=MT.BOLD, offset=message_text.index(f"**{title}**"), length=len(title) + 4),
-        M(type=MT.BOLD, offset=message_text.index(f"**Current Price: ₹{current_price}**"), length=len(f"Current Price: ₹{current_price}") + 4),
-        M(type=MT.BOLD, offset=message_text.index(f"**Original Price: ~~₹{original_price}~~**"), length=len(f"Original Price: ~~₹{original_price}~~") + 4),
-        M(type=MT.BOLD, offset=message_text.index(f"**You Save: {savings_percentage}%**"), length=len(f"You Save: {savings_percentage}%") + 4),
-        M(type=MT.BOLD, offset=message_text.index(f"**Link: {product_details.get('product_url', 'N/A')}**"), length=len(f"Link: {product_details.get('product_url', 'N/A')}") + 4)
-    ]
+    ])
 
     if product_details.get('image_url'):
         await bot.send_photo(
