@@ -80,7 +80,7 @@ def get_product_details(asin):
         image_url = item.images.primary.large.url if item.images.primary else None
         product_url = item.detail_page_url if item.detail_page_url else "N/A"
         current_price = item.offers.listings[0].price.amount if item.offers.listings else None
-        current_price_display = item.offers.listings[0].price.display_amount if item.offers.listings else "N/A"
+        current_price_display = int(current_price) if current_price is not None else "N/A"
         
         # Handle savings and percentage
         savings_amount = item.offers.listings[0].price.savings.amount if hasattr(item.offers.listings[0].price, 'savings') else 0
@@ -88,6 +88,7 @@ def get_product_details(asin):
         
         # Calculate original price if savings amount exists
         original_price = current_price + savings_amount if savings_amount else None
+        original_price_display = int(original_price) if original_price is not None else "N/A"
 
         # Extract highest and lowest price details, default to "N/A" if unavailable
         highest_price = item.offers.summaries[0].highest_price.display_amount if item.offers.summaries else "N/A"
@@ -96,14 +97,13 @@ def get_product_details(asin):
         # Return only the relevant product details
         return {
             'title': title,
-            'current_price': current_price,
-            'current_price_display': current_price_display,
+            'current_price': current_price_display,
             'highest_price': highest_price,
             'lowest_price': lowest_price,
             'savings_percentage': savings_percentage,
             'image_url': image_url,
             'product_url': product_url,
-            'original_price': original_price,
+            'original_price': original_price_display,
         }
     
     except Exception as e:
