@@ -124,12 +124,9 @@ async def send_product_details(asin, chat_id):
 🔥 **Current Price: ₹{current_price}**
 🛒 **Original Price: ~~₹{original_price}~~ **
 🎉 **You Save: {savings_percentage}%**
-"""
 
-    # Create inline keyboard button
-    button = types.InlineKeyboardMarkup(
-        [[types.InlineKeyboardButton("Buy Now 🔗", url=product_details.get('product_url', 'N/A'))]]
-    )
+**Link: {product_url}**
+"""
 
     # Check if image URL is available
     if product_details.get('image_url'):
@@ -138,7 +135,6 @@ async def send_product_details(asin, chat_id):
             chat_id=chat_id,
             photo=product_details.get('image_url', ''),
             caption=message_text,
-            reply_markup=button,
             parse_mode=enums.ParseMode.MARKDOWN
         )
     else:
@@ -146,7 +142,6 @@ async def send_product_details(asin, chat_id):
         await bot.send_message(
             chat_id=chat_id,
             text=message_text,
-            reply_markup=button,
             parse_mode=enums.ParseMode.MARKDOWN
         )
     
