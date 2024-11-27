@@ -1,9 +1,19 @@
 import re, os
-from pyrogram import filters, types, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import filters, enums
 from ub_core import BOT, bot, Message
 from amazon_paapi import AmazonApi
 from urllib.parse import urlparse
+
+from pyrogram.types import MessageEntity as M
+from pyrogram.enums import MessageEntityType as MT
+
+# Define custom emoji IDs
+emoji_ids = {
+    "😍": 5449442513616121857,
+    "🛒": 5312361253610475399,
+    "🪙": 5264713049637409446,
+    "🛍": 5193065010795911968
+}
 
 # Access environment variables
 AMAZON_KEY = os.getenv('AMAZON_KEY')
@@ -129,6 +139,22 @@ async def send_product_details(asin, chat_id):
 🛍 **Link: {product_details.get('product_url', 'N/A')}**
 """
 
+    # Calculate offsets for emojis
+    offsets = {
+        "😍": message_text.index("😍"),
+        "🛒": message_text.index("🛒"),
+        "🪙": message_text.index("🪙"),
+        "🛍": message_text.index("🛍")
+    }
+
+    # Create entities for custom emojis
+    entities = [
+        M(type=MT.CUSTOM_EMOJI, offset=offsets["😍"], length=2, custom_emoji_id=emoji_ids["😍"]),
+        M(type=MT.CUSTOM_EMOJI, offset=offsets["🛒"], length=2, custom_emoji_id=emoji_ids["🛒"]),
+        M(type=MT.CUSTOM_EMOJI, offset=offsets["🪙"], length=2, custom_emoji_id=emoji_ids["🪙"]),
+        M(type=MT.CUSTOM_EMOJI, offset=offsets["🛍"], length=2, custom_emoji_id=emoji_ids["🛍"])
+    ]
+
     # Check if image URL is available
     if product_details.get('image_url'):
         # Send product details with image
@@ -136,14 +162,16 @@ async def send_product_details(asin, chat_id):
             chat_id=chat_id,
             photo=product_details.get('image_url', ''),
             caption=message_text,
-            parse_mode=enums.ParseMode.MARKDOWN
+            parse_mode=enums.ParseMode.MARKDOWN,
+            entities=entities
         )
     else:
         # Send product details as a normal message if no image is available
         await bot.send_message(
             chat_id=chat_id,
             text=message_text,
-            parse_mode=enums.ParseMode.MARKDOWN
+            parse_mode=enums.ParseMode.MARKDOWN,
+            entities=entities
         )
     
     return True  # Indicate success
