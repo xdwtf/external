@@ -114,7 +114,6 @@ async def send_product_details(asin, chat_id):
     """
     Sends only the essential product details (title, prices, and savings) to Telegram.
     """
-    # Fetch product details from Amazon API
     product_details = get_product_details(asin)
     
     if not product_details or not product_details.get('title'):
@@ -130,7 +129,7 @@ async def send_product_details(asin, chat_id):
 **{title}**
 
 😍 **Current Price: ₹{current_price}**
-🛒 **Original Price: ~~₹{original_price}~~ **
+🛒 **Original Price: ~~₹{original_price}~~**
 🪙 **You Save: {savings_percentage}%**
 
 🛍 **Link: {product_details.get('product_url', 'N/A')}**
@@ -147,7 +146,12 @@ async def send_product_details(asin, chat_id):
         M(type=MT.CUSTOM_EMOJI, offset=offsets["😍"], length=2, custom_emoji_id=emoji_ids["😍"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🛒"], length=2, custom_emoji_id=emoji_ids["🛒"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🪙"], length=2, custom_emoji_id=emoji_ids["🪙"]),
-        M(type=MT.CUSTOM_EMOJI, offset=offsets["🛍"], length=2, custom_emoji_id=emoji_ids["🛍"])
+        M(type=MT.CUSTOM_EMOJI, offset=offsets["🛍"], length=2, custom_emoji_id=emoji_ids["🛍"]),
+        M(type=MT.BOLD, offset=message_text.index(f"**{title}**"), length=len(title) + 4),
+        M(type=MT.BOLD, offset=message_text.index(f"**Current Price: ₹{current_price}**"), length=len(f"Current Price: ₹{current_price}") + 4),
+        M(type=MT.BOLD, offset=message_text.index(f"**Original Price: ~~₹{original_price}~~**"), length=len(f"Original Price: ~~₹{original_price}~~") + 4),
+        M(type=MT.BOLD, offset=message_text.index(f"**You Save: {savings_percentage}%**"), length=len(f"You Save: {savings_percentage}%") + 4),
+        M(type=MT.BOLD, offset=message_text.index(f"**Link: {product_details.get('product_url', 'N/A')}**"), length=len(f"Link: {product_details.get('product_url', 'N/A')}") + 4)
     ]
 
     if product_details.get('image_url'):
