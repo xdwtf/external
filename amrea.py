@@ -126,7 +126,7 @@ async def send_product_details(asin, chat_id):
 🛒 **Original Price: ~~₹{original_price}~~ **
 🎉 **You Save: {savings_percentage}%**
 
-**Link: {product_url}**
+**Link: {product_details.get('product_url', 'N/A')}**
 """
 
     # Check if image URL is available
