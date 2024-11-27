@@ -117,18 +117,15 @@ async def send_product_details(asin, chat_id):
     # Fetch product details from Amazon API
     product_details = get_product_details(asin)
     
-    # Check if product details were successfully fetched
     if not product_details or not product_details.get('title'):
         bot.log.error("Failed to fetch product details.")
-        return False  # Indicate failure
+        return False
 
-    # Format the essential details (title, current price, high price, low price, and savings)
     title = product_details.get('title', 'N/A')
     current_price = product_details.get('current_price', 'N/A')
     original_price = product_details.get('original_price', 'N/A')
     savings_percentage = product_details.get('savings_percentage', 'N/A')
 
-    # Format the message with the required details
     message_text = f"""
 **{title}**
 
@@ -139,7 +136,6 @@ async def send_product_details(asin, chat_id):
 🛍 **Link: {product_details.get('product_url', 'N/A')}**
 """
 
-    # Calculate offsets for emojis
     offsets = {
         "😍": message_text.index("😍"),
         "🛒": message_text.index("🛒"),
@@ -147,34 +143,30 @@ async def send_product_details(asin, chat_id):
         "🛍": message_text.index("🛍")
     }
 
-    # Create entities for custom emojis
-    entities = [
+    caption_entities = [
         M(type=MT.CUSTOM_EMOJI, offset=offsets["😍"], length=2, custom_emoji_id=emoji_ids["😍"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🛒"], length=2, custom_emoji_id=emoji_ids["🛒"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🪙"], length=2, custom_emoji_id=emoji_ids["🪙"]),
         M(type=MT.CUSTOM_EMOJI, offset=offsets["🛍"], length=2, custom_emoji_id=emoji_ids["🛍"])
     ]
 
-    # Check if image URL is available
     if product_details.get('image_url'):
-        # Send product details with image
         await bot.send_photo(
             chat_id=chat_id,
             photo=product_details.get('image_url', ''),
             caption=message_text,
             parse_mode=enums.ParseMode.MARKDOWN,
-            entities=entities
+            caption_entities=caption_entities
         )
     else:
-        # Send product details as a normal message if no image is available
         await bot.send_message(
             chat_id=chat_id,
             text=message_text,
             parse_mode=enums.ParseMode.MARKDOWN,
-            entities=entities
+            entities=caption_entities
         )
     
-    return True  # Indicate success
+    return True
 
 @bot.on_message(filters.chat(TARGET_CHAT_ID), group=4)
 async def url_replacement_handler(bot: BOT, message: Message):
