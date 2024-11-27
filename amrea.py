@@ -140,14 +140,12 @@ async def send_product_details(asin, chat_id):
         await bot.send_photo(
             chat_id=chat_id,
             photo=product_details.get('image_url', ''),
-            caption=message_text,
-            parse_mode='HTML'
+            caption=message_text
         )
     else:
         await bot.send_message(
             chat_id=chat_id,
-            text=message_text,
-            parse_mode='HTML'
+            text=message_text
         )
     
     return True
