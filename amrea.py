@@ -121,6 +121,7 @@ async def send_product_details(asin, chat_id):
     # Format the message with the required details
     message_text = f"""
 **{title}**
+
 🔥 **Current Price: ₹{current_price}**
 🛒 **Original Price: ~~₹{original_price}~~ **
 🎉 **You Save: {savings_percentage}%**
