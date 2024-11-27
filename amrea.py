@@ -155,14 +155,12 @@ async def send_product_details(asin, chat_id):
             chat_id=chat_id,
             photo=product_details.get('image_url', ''),
             caption=message_text,
-            parse_mode=enums.ParseMode.MARKDOWN,
             caption_entities=caption_entities
         )
     else:
         await bot.send_message(
             chat_id=chat_id,
             text=message_text,
-            parse_mode=enums.ParseMode.MARKDOWN,
             entities=caption_entities
         )
     
