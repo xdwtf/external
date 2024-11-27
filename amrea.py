@@ -30,7 +30,7 @@ pattern_tag = r"(tag=)[^&]*"
 pattern_username = r"@SmartDealsOfindia"
 
 # Target chat IDs
-TARGET_CHAT_ID = [-1001267968308, -1001628270160, -1001678712638, 5071059420]
+TARGET_CHAT_ID = [-1001267968308, -1001628270160, -1001678712638]
 THIS_DEAL_ID = -1002108741045
 
 # Define Amazon URL patterns
