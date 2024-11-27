@@ -122,11 +122,11 @@ async def send_product_details(asin, chat_id):
     message_text = f"""
 **{title}**
 
-🔥 **Current Price: ₹{current_price}**
+😍 **Current Price: ₹{current_price}**
 🛒 **Original Price: ~~₹{original_price}~~ **
-🎉 **You Save: {savings_percentage}%**
+🪙 **You Save: {savings_percentage}%**
 
-**Link: {product_details.get('product_url', 'N/A')}**
+🛍 **Link: {product_details.get('product_url', 'N/A')}**
 """
 
     # Check if image URL is available
