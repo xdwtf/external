@@ -133,7 +133,7 @@ async def send_product_details(asin, chat_id):
 <emoji id="{emoji_ids['🛒']}">🛒</emoji> <b>Original Price: <s>₹{original_price}</s></b>
 <emoji id="{emoji_ids['🪙']}">🪙</emoji> <b>You Save: {savings_percentage}%</b>
 
-<emoji id="{emoji_ids['🛍']}">🛍</emoji> <b>Link: <a href="{product_url}">Product Page</a></b>
+<emoji id="{emoji_ids['🛍']}">🛍</emoji> <b>Link:</b> <b>{product_url}</b>
 """
 
     if product_details.get('image_url'):
