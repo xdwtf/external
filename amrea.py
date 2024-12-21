@@ -63,7 +63,7 @@ def get_asin_from_url(url):
                 return segment  # Likely an ASIN
         return None
     except Exception as e:
-        bot.log.error(e)
+        # bot.log.error(e)
         return None
 
 def get_product_details(asin):
@@ -107,7 +107,7 @@ def get_product_details(asin):
         }
     
     except Exception as e:
-        bot.log.error(e)
+        # bot.log.error(e)
         return None
 
 async def send_product_details(asin, chat_id):
@@ -117,7 +117,7 @@ async def send_product_details(asin, chat_id):
     product_details = get_product_details(asin)
     
     if not product_details or not product_details.get('title'):
-        bot.log.error("Failed to fetch product details.")
+        # bot.log.error("Failed to fetch product details.")
         return False
 
     title = product_details.get('title', 'N/A')
