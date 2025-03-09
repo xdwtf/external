@@ -4,7 +4,7 @@ from ub_core import BOT, bot, Message
 from amazon_paapi import AmazonApi
 from urllib.parse import urlparse
 
-from pyrogram.types import MessageEntity as M
+from pyrogram.types import MessageEntity as M, LinkPreviewOptions
 from pyrogram.enums import MessageEntityType as MT
 
 # Define custom emoji IDs
@@ -233,11 +233,15 @@ async def handle_no_product_info(message: Message):
                         chat_id=THIS_DEAL_ID,
                         text=modified_caption,
                         reply_markup=message.reply_markup,  # Send modified inline keyboard
-                        disable_web_page_preview=True
+                        link_preview_options=LinkPreviewOptions(
+                            is_disabled=True
+                        )
                     )
                 else:
                     await bot.send_message(
                         chat_id=THIS_DEAL_ID,
                         text=modified_caption,
-                        disable_web_page_preview=True
+                        link_preview_options=LinkPreviewOptions(
+                            is_disabled=True
+                        )
                     )
