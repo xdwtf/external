@@ -19,16 +19,14 @@ class Database:
         Update or insert the list of forum topics for a specific chat_id.
         Each time the command is run, this method will update the entire list of topics for the chat_id.
         """
-        # Create the update object
         topic_data = {
-            "chat_id": chat_id,
+            "chat_id": str(chat_id),
             "topics": topics,
             "updated_at": datetime.now(timezone.utc)  # Timestamp for last update
         }
         
-        # Update or insert the document for the specific chat_id
         result = self.forum_topics.update_one(
-            {"chat_id": chat_id},  # Search by chat_id
+            {"chat_id": str(chat_id)},  # Search by chat_id
             {"$set": topic_data},  # Update the topics
             upsert=True  # Insert if chat_id doesn't exist
         )
@@ -49,11 +47,13 @@ db = Database(P_DATABASE_URL, P_DATABASE_NAME)
 
 
 @bot.add_cmd("get_topics")
-async def z(c,m):
+async def z(c, m):
     if not m.input:
-        return await m.reply("give id")
-    chat_id=int(m.input)
-    await m.reply("fetching topics started...")
+        return await m.reply("Please provide a chat ID.")
+    
+    chat_id = int(m.input)
+    # Send an initial message and store its reference
+    status_message = await m.reply("Fetching topics started...")
 
     try:
         # Fetch forum topics asynchronously
@@ -84,17 +84,20 @@ async def z(c,m):
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(response)
             
-            # Send the document with the topics
-            await bot.send_document(m.from_user.id, file_path)
+            # Reply to the original message with the document
+            await bot.send_document(m.chat.id, file_path, reply_to_message_id=status_message.id)
             bot.log.info(f"Sent document with forum topics to user {m.from_user.id}.")
 
             # Remove the temporary file after sending
             os.remove(file_path)
             bot.log.info(f"Temporary file {file_path} removed.")
+
+            # Update the status message to indicate completion
+            await status_message.edit_text("✅ Done fetching topics.")
         else:
             bot.log.info(f"No topics found for chat_id: {chat_id}.")
-            await m.reply("No forum topics found in this chat.")
+            await status_message.edit_text("No forum topics found in this chat.")
 
     except Exception as e:
         bot.log.error(f"Error while processing topics for chat_id {chat_id}: {e}")
-        await m.reply(f"❌ Error: {e}")
+        await status_message.edit_text(f"❌ Error: {e}")
