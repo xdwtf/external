@@ -1,9 +1,9 @@
 import re, os
 from pyrogram import filters, enums
+from pyrogram.types import ReplyParameters
 from ub_core import BOT, bot, Message
 from datetime import datetime, timezone, timedelta
 import pymongo
-
 
 P_DATABASE_URL = os.getenv('P_DATABASE_URL')
 P_DATABASE_NAME = os.getenv('P_DATABASE_NAME')
@@ -84,8 +84,12 @@ async def z(c, m):
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(response)
             
-            # Reply to the original message with the document
-            await bot.send_document(m.chat.id, file_path, reply_to_message_id=status_message.id)
+            # Reply to the original message with the document using reply_parameters
+            await bot.send_document(
+                m.chat.id,
+                file_path,
+                reply_parameters=ReplyParameters(message_id=status_message.id)
+                )
             bot.log.info(f"Sent document with forum topics to user {m.from_user.id}.")
 
             # Remove the temporary file after sending
