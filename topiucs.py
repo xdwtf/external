@@ -93,7 +93,7 @@ async def z(c, m):
             bot.log.info(f"Temporary file {file_path} removed.")
 
             # Update the status message to indicate completion
-            await status_message.edit_text("✅ Done fetching topics.")
+            await status_message.edit_text(f"✅ Done fetching topics for {m.input}\n\ntotal_count: {total_count}")
         else:
             bot.log.info(f"No topics found for chat_id: {chat_id}.")
             await status_message.edit_text("No forum topics found in this chat.")
